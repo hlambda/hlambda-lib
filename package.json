@@ -1,0 +1,39 @@
+{
+  "name": "hlambda",
+  "type": "module",
+  "version": "0.0.1",
+  "description": "Hlambda helpers.",
+  "main": "src/index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hlambda/hlambda-lib.git"
+  },
+  "keywords": [
+    "hlambda",
+    "hasura",
+    "library"
+  ],
+  "contributors": [
+    "Gordan Nekić <gordan@neki.ch>"
+  ],
+  "directories": {
+    "src": "src",
+    "test": "tests"
+  },
+  "scripts": {
+    "test": "npm run mocha-run-tests",
+    "mocha-run-tests": "mocha --timeout 20000 --recursive \"./tests/**/*.test.js\""
+  },
+  "author": "Gordan Nekić",
+  "license": "Apache License 2.0",
+  "bugs": {
+    "url": "https://github.com/hlambda/hlambda-lib/issues"
+  },
+  "homepage": "https://github.com/hlambda/hlambda-lib#readme",
+  "devDependencies": {
+    "mocha": "^9.0.3"
+  },
+  "dependencies": {
+    "node-fetch": "^3.2.0"
+  }
+}
