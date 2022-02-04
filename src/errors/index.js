@@ -1,6 +1,7 @@
 export const errorObjectEnahancer = (
   ERRORS_IN,
   MICROSERVICE_NAME,
+  includeExtensions = true,
   overrideByReference = true,
   implementToStringPrototype = true
 ) => {
@@ -12,10 +13,12 @@ export const errorObjectEnahancer = (
       code: key, // Disabled for now.
       path: `$.${MICROSERVICE_NAME}.${key}`, // Path does not seem to work (Hasura 2.1.0)
       // Add hasura thingy to output
-      extensions: {
-        code: key,
-        path: `$.${MICROSERVICE_NAME}.${key}`,
-      },
+      ...(includeExtensions) && {
+        extensions: {
+          code: key,
+          path: `$.${MICROSERVICE_NAME}.${key}`,
+        },
+      }
     };
 
     if (overrideByReference) {
@@ -26,10 +29,12 @@ export const errorObjectEnahancer = (
         code: key, // Disabled for now.
         path: `$.${MICROSERVICE_NAME}.${key}`, // Path does not seem to work (Hasura 2.1.0)
         // Add hasura thingy to output
-        extensions: {
-          code: key,
-          path: `$.${MICROSERVICE_NAME}.${key}`,
-        },
+        ...(includeExtensions) && {
+          extensions: {
+            code: key,
+            path: `$.${MICROSERVICE_NAME}.${key}`,
+          },
+        }
       };
 
       if (implementToStringPrototype) {
@@ -69,8 +74,8 @@ export const errorDescriptor = (errorObject) => {
 
 export const ERROR_NAMESPACING = [];
 
-export const createErrorDescriptor = (NORMAL_ERRORS_OBJECT, MICROSERVICE_NAME = '') => {
-  const enhacnedErrors = errorObjectEnahancer(NORMAL_ERRORS_OBJECT, MICROSERVICE_NAME);
+export const createErrorDescriptor = (NORMAL_ERRORS_OBJECT, MICROSERVICE_NAME = '', includeExtensions, overrideByReference, implementToStringPrototype) => {
+  const enhacnedErrors = errorObjectEnahancer(NORMAL_ERRORS_OBJECT, MICROSERVICE_NAME, includeExtensions, overrideByReference, implementToStringPrototype);
 
   ERROR_NAMESPACING.push({
     microservice_name: MICROSERVICE_NAME,
