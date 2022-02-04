@@ -7,3 +7,4 @@ temp/
 psd
 thumb
 *.log
+.env
