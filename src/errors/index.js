@@ -13,12 +13,12 @@ export const errorObjectEnahancer = (
       code: key, // Disabled for now.
       path: `$.${MICROSERVICE_NAME}.${key}`, // Path does not seem to work (Hasura 2.1.0)
       // Add hasura thingy to output
-      ...(includeExtensions) && {
+      ...(includeExtensions && {
         extensions: {
           code: key,
           path: `$.${MICROSERVICE_NAME}.${key}`,
         },
-      }
+      }),
     };
 
     if (overrideByReference) {
@@ -29,12 +29,12 @@ export const errorObjectEnahancer = (
         code: key, // Disabled for now.
         path: `$.${MICROSERVICE_NAME}.${key}`, // Path does not seem to work (Hasura 2.1.0)
         // Add hasura thingy to output
-        ...(includeExtensions) && {
+        ...(includeExtensions && {
           extensions: {
             code: key,
             path: `$.${MICROSERVICE_NAME}.${key}`,
           },
-        }
+        }),
       };
 
       if (implementToStringPrototype) {
@@ -72,12 +72,33 @@ export const errorDescriptor = (errorObject) => {
   return JSON.stringify(errorObject);
 };
 
-export const ERROR_NAMESPACING = [];
+// We can argue that this is not the best approach, but hlambda package can be imported from multiple hlambda apps, and it should share the error namespace between them.
+// Define global variable to share single instance of the object between multiple hlambda apps.
+export const nameOfTheGlobalVariableForErrorsNamespace =
+  process.env?.['HLAMBDA_LIB_GLOBAL_ERRORS_NAMESPACE_VARIABLE_NAME'] ?? '__HLAMBDA_LIB_GLOBAL_ERRORS_NAMESPACE';
+if (typeof global[nameOfTheGlobalVariableForErrorsNamespace] === 'undefined') {
+  // The namespace does not exist, we are first or only instance of hlambda npm package.
+  global[nameOfTheGlobalVariableForErrorsNamespace] = [];
+}
 
-export const createErrorDescriptor = (NORMAL_ERRORS_OBJECT, MICROSERVICE_NAME = '', includeExtensions, overrideByReference, implementToStringPrototype) => {
-  const enhacnedErrors = errorObjectEnahancer(NORMAL_ERRORS_OBJECT, MICROSERVICE_NAME, includeExtensions, overrideByReference, implementToStringPrototype);
+export const ERROR_NAMESPACING = global[nameOfTheGlobalVariableForErrorsNamespace];
 
-  ERROR_NAMESPACING.push({
+export const createErrorDescriptor = (
+  NORMAL_ERRORS_OBJECT,
+  MICROSERVICE_NAME = '',
+  includeExtensions,
+  overrideByReference,
+  implementToStringPrototype
+) => {
+  const enhacnedErrors = errorObjectEnahancer(
+    NORMAL_ERRORS_OBJECT,
+    MICROSERVICE_NAME,
+    includeExtensions,
+    overrideByReference,
+    implementToStringPrototype
+  );
+
+  global[nameOfTheGlobalVariableForErrorsNamespace].push({
     microservice_name: MICROSERVICE_NAME,
     errors: enhacnedErrors,
   });

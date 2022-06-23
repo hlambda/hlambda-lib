@@ -23,23 +23,21 @@ const executeWithAdminRights = async (operationsDoc, operationName, variables) =
   const HASURA_GRAPHQL_ADMIN_SECRET = getEnvValue(constants.ENV_HASURA_GRAPHQL_ADMIN_SECRET);
 
   // Make a request
-  const result = await fetch(
-    `${HASURA_GRAPHQL_API_ENDPOINT}`,
-    {
-      method: 'POST',
-      body: JSON.stringify({
-        query: operationsDoc,
-        variables,
-        operationName,
-      }),
-      headers: {
-        'Content-Type': 'application/json',
-        'x-hasura-admin-secret': HASURA_GRAPHQL_ADMIN_SECRET,
-      },
+  const result = await fetch(`${HASURA_GRAPHQL_API_ENDPOINT}`, {
+    method: 'POST',
+    body: JSON.stringify({
+      query: operationsDoc,
+      variables,
+      operationName,
+    }),
+    headers: {
+      'Content-Type': 'application/json',
+      'x-hasura-admin-secret': HASURA_GRAPHQL_ADMIN_SECRET,
     },
-  );
+  });
 
-  const jsonResult = await result.json()
+  const jsonResult = await result
+    .json()
     .then((data) => {
       return data;
     })

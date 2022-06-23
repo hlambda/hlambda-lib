@@ -41,12 +41,21 @@ export const constantsObjectEnahancer = (
   return NEW_CONSTANTS;
 };
 
-export const CONSTANTS_NAMESPACING = [];
+// We can argue that this is not the best approach, but hlambda package can be imported from multiple hlambda apps, and it should share the constants namespace between them.
+// Define global variable to share single instance of the object between multiple hlambda apps.
+export const nameOfTheGlobalVariableForConstantsNamespace =
+  process.env?.['HLAMBDA_LIB_GLOBAL_CONSTANTS_NAMESPACE_VARIABLE_NAME'] ?? '__HLAMBDA_LIB_GLOBAL_CONSTANTS_NAMESPACE';
+if (typeof global[nameOfTheGlobalVariableForConstantsNamespace] === 'undefined') {
+  // The namespace does not exist, we are first or only instance of hlambda npm package.
+  global[nameOfTheGlobalVariableForConstantsNamespace] = [];
+}
+
+export const CONSTANTS_NAMESPACING = global[nameOfTheGlobalVariableForConstantsNamespace];
 
 export const createConstantsDescriptor = (NORMAL_CONSTANTS_OBJECT, MICROSERVICE_NAME = '') => {
   const enhacnedConstants = constantsObjectEnahancer(NORMAL_CONSTANTS_OBJECT, MICROSERVICE_NAME);
 
-  CONSTANTS_NAMESPACING.push({
+  global[nameOfTheGlobalVariableForConstantsNamespace].push({
     microservice_name: MICROSERVICE_NAME,
     constants: enhacnedConstants,
   });
